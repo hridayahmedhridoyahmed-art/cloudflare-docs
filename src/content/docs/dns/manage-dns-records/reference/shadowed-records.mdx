@@ -1,12 +1,12 @@
 ---
 title: Shadowed records
 pcx_content_type: concept
-description: Shadowed records are DNS records that exist in your zone but are never served because a subdomain delegation takes precedence. Learn how Cloudflare detects and annotates them.
+description: DNS records that exist in your zone but are never served because a subdomain delegation takes precedence over them.
+products:
+  - dns
 sidebar:
   order: 5
 ---
-
-# Shadowed records
 
 When you add an `NS` record to your zone, you create a **subdomain delegation**: you hand authority for that subdomain (and everything below it) to another set of nameservers. Any other records stored in your zone at or below that delegation point are **shadowed**: they stay in your zone, but Cloudflare never answers with them. Once authority is delegated, queries for that subdomain are referred to the external nameservers.
 
@@ -17,7 +17,7 @@ Shadowing is easy to introduce without realizing it. You might create a record u
 This metadata is exposed in two places: as fields on API responses (covering whether a record is shadowed, whether it serves a special role as glue, and how many records a delegation hides) and as warnings in the Cloudflare dashboard on record creation and in the DNS record list.
 
 :::note
-Shadow metadata is computed on demand at read time and is never stored. It is not returned unless you explicitly request it. See [Request shadow metadata](#request-shadow-metadata) below.
+Shadow metadata is computed on demand at read time and is never stored. It is not returned unless you explicitly request it. Refer to [Request shadow metadata](#request-shadow-metadata).
 :::
 
 ## Why shadowed records matter
@@ -25,7 +25,7 @@ Shadow metadata is computed on demand at read time and is never stored. It is no
 Shadowed records are invisible to DNS resolvers. Consider this example:
 
 ```txt
-sub.example.com    NS    ns1.externalprovider.com.
+sub.example.com    NS    ns1.example.org.
 www.sub.example.com  A   192.0.2.1
 ```
 
@@ -168,7 +168,7 @@ www.sub.example.com   A     192.0.2.2
     "name": "ns1.sub.example.com",
     "content": "192.0.2.1",
     "meta": {
-      "shadowed_by": ["<ns-record-id>"],
+      "shadowed_by": ["<NS_RECORD_ID>"],
       "is_glue": true
     }
   },
